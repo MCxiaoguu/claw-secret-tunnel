@@ -145,8 +145,12 @@ export function createRequestSecretTool(deps: {
     const { key, token } = store.create(label, lifetime);
 
     // 2. Build the authoritative link server-side (agent never assembles it).
+    // The OpenClaw HTTP router matches plugin routes by EXACT pathname
+    // (plugins-http.ts: routes.find(e => e.path === url.pathname)), so the
+    // token rides in the QUERY, not as a path segment — otherwise the link
+    // would 404. base64url tokens are query-safe, so no encoding is needed.
     const base = getBaseUrl();
-    const link = `${base.url}${routePath}/${token}`;
+    const link = `${base.url}${routePath}?token=${token}`;
 
     // 3. Best-effort direct delivery; never let a delivery failure escape.
     let deliveredOk = false;

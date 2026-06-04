@@ -32,9 +32,11 @@ function textOf(result: {
   return result.content.map((c) => c.text).join("\n");
 }
 
-/** Pull the token (last path segment) out of a built link. */
+/** Pull the token out of the link query (`?token=...`). */
 function tokenFromLink(link: string): string {
-  return link.slice(link.lastIndexOf("/") + 1);
+  const token = new URL(link).searchParams.get("token");
+  if (token === null) throw new Error(`link has no token query: ${link}`);
+  return token;
 }
 
 describe("createRequestSecretTool", () => {
@@ -87,9 +89,10 @@ describe("createRequestSecretTool", () => {
       expect(text).toContain(details.link);
       expect(text).toContain(details.key);
 
-      // link is exactly base + routePath + "/" + token (server-minted, not assembled by the agent)
+      // link is exactly base + routePath + "?token=" + token (token in the
+      // QUERY so the exact-pathname HTTP router matches the route).
       const token = tokenFromLink(details.link);
-      expect(details.link).toBe(`${BASE}${ROUTE}/${token}`);
+      expect(details.link).toBe(`${BASE}${ROUTE}?token=${token}`);
 
       // a real pending record now exists under that key
       expect(deps.store.getStatus(details.key)).toBe("pending");
