@@ -12,5 +12,5 @@ export type VanisherConfig = {
 };
 export const DEFAULT_CONFIG: VanisherConfig = {
   detectTailscale: true, defaultLifetime: "use-once",
-  ttlSeconds: 300, linkExpirySeconds: 600, routePath: "/vanish",
+  ttlSeconds: 300, linkExpirySeconds: 600, routePath: "/secret",
 };

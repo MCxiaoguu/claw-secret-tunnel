@@ -26,7 +26,7 @@ export function createRequestSecretTool(deps: {
    * call so a late-configured `publicUrl` / Tailscale state is picked up.
    */
   getBaseUrl: () => { url: string; warning?: string };
-  /** Intake route path the link is built on, e.g. "/vanish". */
+  /** Intake route path the link is built on, e.g. "/secret". */
   routePath: string;
   /** Lifetime applied when the agent does not override it. */
   defaultLifetime: Lifetime;

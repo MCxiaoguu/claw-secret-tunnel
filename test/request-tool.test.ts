@@ -9,7 +9,7 @@ function cfg(overrides: Partial<VanisherConfig> = {}): VanisherConfig {
 }
 
 const BASE = "https://host.tail1234.ts.net";
-const ROUTE = "/vanish";
+const ROUTE = DEFAULT_CONFIG.routePath;
 
 /** Default deps with a REAL SecretStore so behavior is exercised end-to-end. */
 function makeDeps(

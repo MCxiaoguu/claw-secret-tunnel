@@ -9,7 +9,7 @@ function cfg(overrides: Partial<VanisherConfig> = {}): VanisherConfig {
   return { ...DEFAULT_CONFIG, ...overrides };
 }
 
-const ROUTE = "/vanish";
+const ROUTE = DEFAULT_CONFIG.routePath;
 
 /**
  * Stand up a real loopback HTTP server wrapping the intake handler so the
