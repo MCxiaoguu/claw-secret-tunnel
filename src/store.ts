@@ -173,6 +173,25 @@ export class SecretStore {
     return this.getRecord(key)?.status;
   }
 
+  /**
+   * Intake-facing lookup BY TOKEN (the URL capability), used to render the
+   * one-time form. Returns the human-facing `label` and a `status` that
+   * reflects link expiry: a `pending` record whose link has lapsed
+   * (`now > linkExpiresAt`) is reported as `"expired"`. This is a READ-ONLY
+   * computation — it never mutates the record (so the authoritative status, and
+   * thus `fill`'s own expiry gate, are untouched). Returns `undefined` for an
+   * unknown/already-wiped token. NEVER exposes the value.
+   */
+  tokenInfo(token: string): { label: string; status: SecretStatus } | undefined {
+    const record = this.byToken.get(token);
+    if (!record) return undefined;
+    let status = record.status;
+    if (status === "pending" && Date.now() > record.linkExpiresAt) {
+      status = "expired";
+    }
+    return { label: record.label, status };
+  }
+
   /** Live secret values currently held (filled, not wiped). For the redaction backstop. */
   activeValues(): string[] {
     const values: string[] = [];

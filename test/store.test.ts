@@ -132,6 +132,55 @@ describe("SecretStore", () => {
     });
   });
 
+  describe("tokenInfo", () => {
+    it("returns the label + pending status for a fresh pending record", () => {
+      const store = new SecretStore(cfg());
+      const { token } = store.create("OpenAI API Key");
+      expect(store.tokenInfo(token)).toEqual({
+        label: "OpenAI API Key",
+        status: "pending",
+      });
+    });
+
+    it("reports a pending record with an expired link as expired (without mutating it)", () => {
+      const store = new SecretStore(cfg({ linkExpirySeconds: 600 }));
+      const { key, token } = store.create("api");
+      vi.advanceTimersByTime(600 * 1000 + 1);
+      expect(store.tokenInfo(token)).toEqual({ label: "api", status: "expired" });
+      // read-only: the record must still be 'pending' (not mutated to expired/consumed),
+      // so the underlying status is unchanged and a fresh fill (had the link not
+      // expired) would still be governed by fill()'s own expiry check.
+      expect(store.getStatus(key)).toBe("pending");
+    });
+
+    it("treats the exact link-expiry boundary as still pending", () => {
+      const store = new SecretStore(cfg({ linkExpirySeconds: 600 }));
+      const { token } = store.create("api");
+      vi.advanceTimersByTime(600 * 1000); // now === linkExpiresAt (not > )
+      expect(store.tokenInfo(token)).toEqual({ label: "api", status: "pending" });
+    });
+
+    it("returns the filled status once the record is filled", () => {
+      const store = new SecretStore(cfg());
+      const { token } = store.create("api");
+      store.fill(token, "sk-secret");
+      expect(store.tokenInfo(token)).toEqual({ label: "api", status: "filled" });
+    });
+
+    it("returns undefined for an unknown token", () => {
+      const store = new SecretStore(cfg());
+      expect(store.tokenInfo("not-a-real-token")).toBeUndefined();
+    });
+
+    it("returns undefined once a use-once record has been consumed/wiped", () => {
+      const store = new SecretStore(cfg());
+      const { key, token } = store.create("api", "use-once");
+      store.fill(token, "one-shot");
+      store.resolveValue(key); // wipes the record
+      expect(store.tokenInfo(token)).toBeUndefined();
+    });
+  });
+
   describe("getStatus", () => {
     it("returns undefined for an unknown key", () => {
       const store = new SecretStore(cfg());
