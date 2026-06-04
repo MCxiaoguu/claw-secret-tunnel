@@ -31,7 +31,12 @@ export type PluginRuntime = {
   [k: string]: unknown;
 };
 
-export type PluginLogger = { info: (...a: unknown[]) => void; warn: (...a: unknown[]) => void; error: (...a: unknown[]) => void; debug?: (...a: unknown[]) => void };
+export type PluginLogger = {
+  info: (message: string) => void;
+  warn: (message: string) => void;
+  error: (message: string) => void;
+  debug?: (message: string) => void;
+};
 
 export type OpenClawPluginApi = {
   id: string; name: string; source: string;
