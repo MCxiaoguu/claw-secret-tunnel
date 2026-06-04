@@ -1,8 +1,8 @@
 # claw-secret-tunnel
 
-> **Credential Vanisher** — a one-time, out-of-band credential pass-through plugin for [OpenClaw](https://github.com/openclaw/openclaw).
+> **One-Time Secret Tunnel** — a one-time, out-of-band secret hand-off plugin for [OpenClaw](https://github.com/openclaw/openclaw).
 
-A human hands the agent a secret (API key / password / token) **once**, via a one-time link delivered over the chat channel and opened **out-of-band**. The secret is captured server-side into an in-memory key→value store the **LLM can never read**, resolved into the agent's *own* tool calls at the point of use via a `{{secret:<key>}}` placeholder, and then **vanishes** — never written to disk, transcript, or logs.
+A human hands the agent a secret (API key / password / token) **once**, via a one-time link delivered over the chat channel and opened **out-of-band**. The secret is captured server-side into an in-memory key→value store the **LLM can never read**, resolved into the agent's *own* tool calls at the point of use via a `{{secret:<key>}}` placeholder, and is **single-use** — used once, then wiped; never written to disk, transcript, or logs.
 
 ## Why
 
@@ -21,4 +21,4 @@ OpenClaw has no inbound-message redaction, so a secret pasted into chat lands in
 
 ## Status
 
-**In development.** See the design spec: [`docs/superpowers/specs/2026-06-03-credential-vanisher-design.md`](docs/superpowers/specs/2026-06-03-credential-vanisher-design.md).
+**In development.** The design spec lives under `docs/superpowers/specs/` (dated `2026-06-03`).

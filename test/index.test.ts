@@ -15,8 +15,8 @@ function readManifest(): Record<string, unknown> {
 
 describe("index — plugin wiring", () => {
   it("default-exports a plugin with the expected identity fields", () => {
-    expect(plugin.id).toBe("credential-vanisher");
-    expect(plugin.name).toBe("Credential Vanisher");
+    expect(plugin.id).toBe("secret-tunnel");
+    expect(plugin.name).toBe("One-Time Secret Tunnel");
     expect(plugin.version).toBe("0.1.0");
     expect(typeof plugin.description).toBe("string");
     expect((plugin.description as string).length).toBeGreaterThan(0);

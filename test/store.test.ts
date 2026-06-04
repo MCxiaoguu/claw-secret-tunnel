@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { SecretStore } from "../src/store.js";
-import { DEFAULT_CONFIG, type VanisherConfig } from "../src/types.js";
+import { DEFAULT_CONFIG, type SecretTunnelConfig } from "../src/types.js";
 
-function cfg(overrides: Partial<VanisherConfig> = {}): VanisherConfig {
+function cfg(overrides: Partial<SecretTunnelConfig> = {}): SecretTunnelConfig {
   return { ...DEFAULT_CONFIG, ...overrides };
 }
 

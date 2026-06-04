@@ -2,9 +2,9 @@ import { describe, it, expect, vi } from "vitest";
 import { Kind } from "@sinclair/typebox";
 import { createRequestSecretTool } from "../src/request-tool.js";
 import { SecretStore } from "../src/store.js";
-import { DEFAULT_CONFIG, type Lifetime, type VanisherConfig } from "../src/types.js";
+import { DEFAULT_CONFIG, type Lifetime, type SecretTunnelConfig } from "../src/types.js";
 
-function cfg(overrides: Partial<VanisherConfig> = {}): VanisherConfig {
+function cfg(overrides: Partial<SecretTunnelConfig> = {}): SecretTunnelConfig {
   return { ...DEFAULT_CONFIG, ...overrides };
 }
 

@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import type { VanisherConfig } from "./types.js";
+import type { SecretTunnelConfig } from "./types.js";
 
 /** Default gateway port (mirrors OpenClaw's DEFAULT_GATEWAY_PORT). */
 const DEFAULT_GATEWAY_PORT = 18789;
@@ -52,7 +52,7 @@ export function getTailscaleDnsName(): string | undefined {
  *     that the link is only reachable on the gateway host.
  */
 export function resolveBaseUrl(
-  config: VanisherConfig,
+  config: SecretTunnelConfig,
   opts: ResolveBaseUrlOptions = {},
 ): { url: string; warning?: string } {
   // 1. Explicit public URL wins.

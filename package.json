@@ -1,7 +1,7 @@
 {
   "name": "claw-secret-tunnel",
   "version": "0.1.0",
-  "description": "Credential Vanisher — one-time, out-of-band, never-stored credential pass-through for OpenClaw",
+  "description": "One-Time Secret Tunnel — one-time, never-stored, out-of-band secret hand-off plugin for OpenClaw",
   "type": "module",
   "openclaw": { "extensions": ["./dist/index.js"] },
   "main": "./dist/index.js",

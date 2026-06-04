@@ -82,7 +82,7 @@ describe("integration — full end-to-end via fakeApi", () => {
     vi.restoreAllMocks();
   });
 
-  it("mints → submits out-of-band → redacts live → resolves once → vanishes → no leak", async () => {
+  it("mints → submits out-of-band → redacts live → resolves once → wiped (single-use) → no leak", async () => {
     // Spy on EVERY console channel + the api logger for the whole flow so we can
     // prove the literal value is never written anywhere.
     const consoleSpies = (
@@ -170,7 +170,7 @@ describe("integration — full end-to-end via fakeApi", () => {
       },
     });
 
-    // (6) Vanish (use-once): the SAME placeholder now blocks — the value was wiped
+    // (6) Single-use (use-once): the SAME placeholder now blocks — the value was wiped
     //     the instant it was resolved in step 5.
     const blocked = beforeToolCall({
       toolName: "http_request",
@@ -199,7 +199,7 @@ describe("integration — full end-to-end via fakeApi", () => {
     }
     expect(JSON.stringify(logs)).not.toContain(SECRET);
     // The only thing the plugin logs at all is the static registration fact.
-    expect(logs).toEqual([{ level: "info", args: ["credential-vanisher registered"] }]);
+    expect(logs).toEqual([{ level: "info", args: ["secret-tunnel registered"] }]);
   });
 
   it("session-lifetime secret resolves more than once, then session_end wipes it", async () => {

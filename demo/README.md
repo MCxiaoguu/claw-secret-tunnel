@@ -1,4 +1,4 @@
-# Credential Vanisher — demo & manual gateway load
+# One-Time Secret Tunnel — demo & manual gateway load
 
 Two things live here:
 
@@ -33,11 +33,11 @@ The script does **not** reach into the plugin's individual units. It:
 | 2 | **Human opens the link** (real `GET`) | An HTML form comes back containing the human-readable **label** (e.g. "OpenAI API key"), not a value. |
 | 3 | **Human submits the secret** (real `POST secret=…`) | HTTP **200**; the value is captured server-side into the in-memory store. The confirmation page echoes **no value**. |
 | 4 | **Agent uses it** (`before_tool_call`) | Params **BEFORE** carry the `{{secret:<key>}}` placeholder; params **AFTER** carry the **real value** — this is what the tool executes with, and *the model never saw it*. |
-| 5 | **It vanishes** (use-once) | The **same** placeholder, used again, is now **blocked** (`{ block, blockReason }`) — the value was wiped the instant it was first resolved. |
+| 5 | **Single-use** (use-once) | The **same** placeholder, used again, is now **blocked** (`{ block, blockReason }`) — the value was wiped the instant it was first resolved. |
 | 6 | **Backstop** (`message_sending`) | Using a separate **session**-lifetime secret (one that survives, so we can demonstrate a *live* value), an accidental echo in outbound content is **redacted** to `[redacted-secret]` before send. After `session_end`, the value is wiped and the backstop finds nothing to redact. |
-| 7 | **No leak** | Every log line the plugin emitted is dumped; the only one is the static `credential-vanisher registered` — neither secret value ever appears in any log line. |
+| 7 | **No leak** | Every log line the plugin emitted is dumped; the only one is the static `secret-tunnel registered` — neither secret value ever appears in any log line. |
 
-The use-once secret (`sk-DEMO-1234567890`) is what the agent must never see; it travels the full mint → submit → inject-once → vanish arc. The session secret (`pg-LIVE-secret-9876543210`) exists only to show the redaction backstop scrubbing a value that is still live.
+The use-once secret (`sk-DEMO-1234567890`) is what the agent must never see; it travels the full mint → submit → inject-once → wipe arc (single-use). The session secret (`pg-LIVE-secret-9876543210`) exists only to show the redaction backstop scrubbing a value that is still live.
 
 ---
 
@@ -56,12 +56,12 @@ npm run build      # produces ./dist/index.js
 ```yaml
 plugins:
   enabled: true
-  allow: [credential-vanisher]
+  allow: [secret-tunnel]
   load:
     paths: ["<ABSOLUTE PATH TO THIS REPO>"]
-    # e.g. /Users/hanyanggu/Personal_Files/Coding/random_prjs/openclaw_plugin_credential_vanisher
+    # e.g. /Users/hanyanggu/Personal_Files/Coding/random_prjs/openclaw_plugin_secret_tunnel
   entries:
-    credential-vanisher:
+    secret-tunnel:
       enabled: true
       config:
         publicUrl: "https://<your-funnel>.ts.net"   # your Tailscale Funnel base URL
@@ -85,12 +85,12 @@ Per the OpenClaw docs these exercise the loader's acceptance gates (manifest + r
 
 ```bash
 openclaw plugins validate --entry <ABSOLUTE PATH TO THIS REPO>/dist/index.js
-openclaw plugins inspect credential-vanisher --runtime --json
+openclaw plugins inspect secret-tunnel --runtime --json
 ```
 
 ### e. Try it
 
-In a session with the gateway running, ask the agent for a credential ("I need you to call the OpenAI API — ask me for the key"). The agent calls `request_secret`; relay/open the minted link, submit the value, and watch the agent use `{{secret:<key>}}` — the value is injected only at the tool boundary and then vanishes.
+In a session with the gateway running, ask the agent for a credential ("I need you to call the OpenAI API — ask me for the key"). The agent calls `request_secret`; relay/open the minted link, submit the value, and watch the agent use `{{secret:<key>}}` — the value is injected only at the tool boundary and then wiped (single-use).
 
 ---
 
@@ -108,7 +108,7 @@ We attempted to validate the built plugin through the **real OpenClaw loader/CLI
 
 What we **did** verify against the real checkout (source inspection):
 
-- The plugin's default export loads from `dist/index.js` with `id: "credential-vanisher"` and a `register` function — the exact shape `src/plugins/loader.ts` consumes (it passes `pluginConfig: validatedConfig.value` into `register`, matching how the demo supplies `pluginConfig.publicUrl`).
+- The plugin's default export loads from `dist/index.js` with `id: "secret-tunnel"` and a `register` function — the exact shape `src/plugins/loader.ts` consumes (it passes `pluginConfig: validatedConfig.value` into `register`, matching how the demo supplies `pluginConfig.publicUrl`).
 - The gateway's plugin HTTP router dispatches by **exact pathname** (`src/gateway/server/plugins-http.ts:26` → `routes.find((entry) => entry.path === url.pathname)`). The demo's server mirrors this exactly, and the minted link rides the token in the **query string** (`/secret?token=…`) so it matches the exact registered path `/secret` — this is why the link resolves rather than 404-ing.
 
 To complete the loader-backed check on a machine with fast network: in `/Users/hanyanggu/for_openclaw/openclaw` run `pnpm install` then `pnpm build`, then

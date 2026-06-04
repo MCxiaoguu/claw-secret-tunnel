@@ -3,7 +3,7 @@ import type {
   Lifetime,
   SecretRecord,
   SecretStatus,
-  VanisherConfig,
+  SecretTunnelConfig,
 } from "./types.js";
 
 /**
@@ -69,11 +69,11 @@ function mintToken(): string {
 }
 
 export class SecretStore {
-  private readonly config: VanisherConfig;
+  private readonly config: SecretTunnelConfig;
   private readonly byToken = new Map<string, StoredRecord>();
   private readonly keyToToken = new Map<string, string>();
 
-  constructor(config: VanisherConfig) {
+  constructor(config: SecretTunnelConfig) {
     this.config = config;
   }
 

@@ -1,13 +1,13 @@
 import { describe, it, expect } from "vitest";
 import { SecretStore } from "../src/store.js";
-import { DEFAULT_CONFIG, type Lifetime, type VanisherConfig } from "../src/types.js";
+import { DEFAULT_CONFIG, type Lifetime, type SecretTunnelConfig } from "../src/types.js";
 import {
   resolveParams,
   createBeforeToolCall,
   createAfterToolCall,
 } from "../src/resolver.js";
 
-function cfg(overrides: Partial<VanisherConfig> = {}): VanisherConfig {
+function cfg(overrides: Partial<SecretTunnelConfig> = {}): SecretTunnelConfig {
   return { ...DEFAULT_CONFIG, ...overrides };
 }
 

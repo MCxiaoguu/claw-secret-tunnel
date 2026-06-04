@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // @ts-check
 /**
- * Credential Vanisher — runnable end-to-end demo ("see it working").
+ * One-Time Secret Tunnel — runnable end-to-end demo ("see it working").
  *
  * This script drives the REAL compiled plugin (`../dist/index.js`) exactly the
  * way the OpenClaw gateway would, over REAL HTTP, and PRINTS each stage so a
@@ -11,7 +11,7 @@
  *   2. Human opens the minted link (real GET)  → a one-field HTML form comes back.
  *   3. Human submits the secret (real POST)    → HTTP 200, value captured server-side.
  *   4. Agent uses {{secret:<key>}} in a call   → the value is injected at the boundary.
- *   5. Same placeholder again                  → BLOCKED (use-once value already wiped).
+ *   5. Same placeholder again                  → BLOCKED (single-use value already wiped).
  *   6. Backstop: an accidental echo            → redacted by `message_sending`.
  *   7. No leak                                 → the value never appears in any log line.
  *
@@ -85,8 +85,8 @@ function makeApi(pluginConfig) {
   const record = (level) => (message) => logs.push({ level, message: String(message) });
 
   const api = {
-    id: "credential-vanisher",
-    name: "Credential Vanisher",
+    id: "secret-tunnel",
+    name: "One-Time Secret Tunnel",
     source: "demo",
     config: {},
     pluginConfig,
@@ -165,7 +165,7 @@ function startGatewayLikeServer(routes) {
 
 async function main() {
   console.log(`\n${"#".repeat(78)}`);
-  console.log("#  Credential Vanisher — end-to-end demo (real plugin, real HTTP)");
+  console.log("#  One-Time Secret Tunnel — end-to-end demo (real plugin, real HTTP)");
   console.log(`#  The secret the agent must NEVER see: ${SECRET}`);
   console.log(`${"#".repeat(78)}`);
 
@@ -175,7 +175,7 @@ async function main() {
   const mod = await import(pathToUrl(distEntry));
   const plugin = mod.default;
   assert(plugin && typeof plugin.register === "function", "loaded ./dist/index.js (real plugin)");
-  assert(plugin.id === "credential-vanisher", `plugin id is "${plugin.id}"`);
+  assert(plugin.id === "secret-tunnel", `plugin id is "${plugin.id}"`);
 
   // Start the gateway-like server FIRST on an ephemeral port. It reads `routes`
   // live, so the plugin's soon-to-be-registered route will be served once added.
@@ -263,8 +263,8 @@ async function main() {
       "non-placeholder fields (url) are untouched",
     );
 
-    // === STEP 5 — It vanishes (use-once: second use is blocked) =========
-    section("It vanishes  (use-once: the SAME placeholder is now blocked — value wiped on first use)");
+    // === STEP 5 — Single-use (use-once: second use is blocked) ==========
+    section("Single-use  (use-once: the SAME placeholder is now blocked — value wiped on first use)");
     const blocked = beforeToolCall({
       toolName: "http_request",
       params: { headers: { Authorization: `Bearer {{secret:${key}}}` } },
@@ -323,7 +323,7 @@ async function main() {
     assert(!logDump.includes(SECRET), "use-once value never appears in any log line");
     assert(!logDump.includes(SESSION_SECRET), "session value never appears in any log line");
     assert(
-      logs.length === 1 && logs[0].level === "info" && logs[0].message === "credential-vanisher registered",
+      logs.length === 1 && logs[0].level === "info" && logs[0].message === "secret-tunnel registered",
       "the ONLY thing logged is the static registration fact",
     );
 
@@ -331,7 +331,7 @@ async function main() {
     console.log(`\n${"#".repeat(78)}`);
     console.log(`#  DEMO PASSED — ${assertions} assertions held across ${stepNo} steps.`);
     console.log("#  The model saw a key + a link; the human supplied the value out-of-band;");
-    console.log("#  the value was injected only at the tool boundary, used once, then vanished.");
+    console.log("#  the value was injected only at the tool boundary, used once, then wiped.");
     console.log(`${"#".repeat(78)}\n`);
   } catch (err) {
     exitCode = 1;

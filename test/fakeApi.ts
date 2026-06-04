@@ -5,7 +5,7 @@ export function fakeApi(overrides: Partial<OpenClawPluginApi> = {}) {
   const routes: Array<{ path: string; handler: HttpRouteHandler }> = [];
   const logs: { level: string; args: unknown[] }[] = [];
   const api: OpenClawPluginApi = {
-    id: "credential-vanisher", name: "Credential Vanisher", source: "test",
+    id: "secret-tunnel", name: "One-Time Secret Tunnel", source: "test",
     config: {}, pluginConfig: {}, runtime: {},
     logger: {
       info: (...a) => logs.push({ level: "info", args: a }),

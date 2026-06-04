@@ -124,7 +124,7 @@ export function resolveParams(
   for (const key of keys) {
     const value = store.resolveValue(key);
     if (value === undefined) {
-      // Race: a key was "filled" at check time but vanished before resolve.
+      // Race: a key was "filled" at check time but was used once (and wiped) before resolve.
       return { kind: "block", reason: blockReason(store, key) };
     }
     values.set(key, value);

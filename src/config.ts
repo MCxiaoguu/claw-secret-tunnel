@@ -1,10 +1,10 @@
-import { DEFAULT_CONFIG, type Lifetime, type VanisherConfig } from "./types.js";
+import { DEFAULT_CONFIG, type Lifetime, type SecretTunnelConfig } from "./types.js";
 
 /**
  * Defensive config loader.
  *
  * Merges the operator-supplied `api.pluginConfig` (sourced from
- * `openclaw.yaml` → `plugins.entries["credential-vanisher"].config`, already
+ * `openclaw.yaml` → `plugins.entries["secret-tunnel"].config`, already
  * loosely validated against the manifest `configSchema`, but NOT something we
  * trust) over {@link DEFAULT_CONFIG}.
  *
@@ -26,9 +26,9 @@ function finitePositive(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value) && value > 0;
 }
 
-export function loadConfig(raw: unknown): VanisherConfig {
+export function loadConfig(raw: unknown): SecretTunnelConfig {
   // Start from a fresh copy of the defaults so we never mutate the shared const.
-  const config: VanisherConfig = { ...DEFAULT_CONFIG };
+  const config: SecretTunnelConfig = { ...DEFAULT_CONFIG };
 
   if (raw === null || typeof raw !== "object") {
     return config;

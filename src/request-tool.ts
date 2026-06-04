@@ -4,8 +4,8 @@ import type { Lifetime } from "./types.js";
 import type { SecretStore } from "./store.js";
 
 /**
- * The `request_secret` tool — the agent-facing front door of the Credential
- * Vanisher. It mints a one-time intake link + an agent-facing key and returns
+ * The `request_secret` tool — the agent-facing front door of the One-Time
+ * Secret Tunnel. It mints a one-time intake link + an agent-facing key and returns
  * them as a tool result. It NEVER returns (or even possesses) a secret value:
  * at this point only a `pending` record exists. The value is captured later,
  * out-of-band, via the link, and is injected into the agent's OWN tool calls at

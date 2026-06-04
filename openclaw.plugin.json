@@ -1,6 +1,6 @@
 {
-  "id": "credential-vanisher",
-  "name": "Credential Vanisher",
+  "id": "secret-tunnel",
+  "name": "One-Time Secret Tunnel",
   "description": "One-time, never-stored, out-of-band credential pass-through. The agent never sees the value.",
   "version": "0.1.0",
   "configSchema": {

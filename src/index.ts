@@ -8,7 +8,7 @@ import { createBeforeToolCall, createAfterToolCall } from "./resolver.js";
 import { createMessageSending, createToolResultPersist } from "./redact.js";
 
 /**
- * Credential Vanisher — plugin entry point.
+ * One-Time Secret Tunnel — plugin entry point.
  *
  * This is the surface the real OpenClaw gateway loads (`package.json#openclaw`
  * → `./dist/index.js`). `register` wires the six independently-tested units into
@@ -28,7 +28,7 @@ import { createMessageSending, createToolResultPersist } from "./redact.js";
  * The plugin config JSON Schema. Defined ONCE here and asserted (in the tests)
  * to deep-equal the on-disk `openclaw.plugin.json#configSchema`, so the manifest
  * the gateway validates against and the schema the code advertises can never
- * drift apart. Keep these properties in lockstep with {@link VanisherConfig}.
+ * drift apart. Keep these properties in lockstep with {@link SecretTunnelConfig}.
  */
 export const configSchema = {
   type: "object",
@@ -48,8 +48,8 @@ export const configSchema = {
 } as const;
 
 const plugin: OpenClawPlugin = {
-  id: "credential-vanisher",
-  name: "Credential Vanisher",
+  id: "secret-tunnel",
+  name: "One-Time Secret Tunnel",
   description:
     "One-time, never-stored, out-of-band credential pass-through. The agent never sees the value.",
   version: "0.1.0",
@@ -93,7 +93,7 @@ const plugin: OpenClawPlugin = {
 
     // Minimal, value-free startup log. We deliberately log NOTHING derived from
     // a captured secret; only the static registration fact.
-    api.logger.info("credential-vanisher registered");
+    api.logger.info("secret-tunnel registered");
   },
 };
 
