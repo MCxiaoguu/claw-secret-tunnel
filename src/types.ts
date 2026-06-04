@@ -2,7 +2,7 @@ export type Lifetime = "use-once" | "session" | "ttl";
 export type SecretStatus = "pending" | "filled" | "consumed" | "expired";
 export type SecretRecord = {
   id: string; key: string; token: string; label: string;
-  status: SecretStatus; value?: string;
+  status: SecretStatus;
   lifetime: Lifetime; createdAt: number; filledAt?: number; lastUsedAt?: number;
   linkExpiresAt: number; valueExpiresAt?: number;
 };

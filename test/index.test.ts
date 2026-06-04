@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import plugin from "../src/index.js";
+import { loadConfig } from "../src/config.js";
 import { fakeApi } from "./fakeApi.js";
 
 /** Parse the on-disk manifest the real gateway loads (drift guard source of truth). */
@@ -87,6 +88,14 @@ describe("index — plugin wiring", () => {
     const { api, routes } = fakeApi({ pluginConfig: undefined });
     expect(() => plugin.register(api)).not.toThrow();
     expect(routes[0].path).toBe("/secret");
+  });
+
+  it("loadConfig honours a normal routePath but fails safe on one containing '?'", () => {
+    // A clean path is adopted as-is.
+    expect(loadConfig({ routePath: "/creds" }).routePath).toBe("/creds");
+    // A routePath carrying a query can't round-trip as a dispatch pathname, so
+    // it must fall back to the default rather than mint links that always 404.
+    expect(loadConfig({ routePath: "/x?y" }).routePath).toBe("/secret");
   });
 
   it("captured session_end and gateway_stop hooks run without throwing", () => {

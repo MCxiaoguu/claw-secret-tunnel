@@ -63,7 +63,13 @@ export function loadConfig(raw: unknown): VanisherConfig {
   // routePath: a non-empty string that looks like an absolute path. We normalise
   // to a leading "/" and strip any trailing slash so it composes cleanly with the
   // intake handler and the minted link. A blank/garbage value keeps the default.
-  if (typeof input.routePath === "string") {
+  //
+  // Fail-safe: the path is registered for EXACT-match dispatch on `url.pathname`,
+  // but the minted link is `<routePath>?token=...`. A value carrying a query
+  // ("?"), fragment ("#"), or whitespace can't round-trip as a pathname (e.g.
+  // "/x?y" registers literally but the gateway dispatches on pathname "/x", so
+  // every link 404s). Reject such values and keep the default instead.
+  if (typeof input.routePath === "string" && !/[?#\s]/.test(input.routePath)) {
     const trimmed = input.routePath.trim();
     if (trimmed.length > 0) {
       const withLeading = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
