@@ -1,0 +1,20 @@
+{
+  "name": "claw-secret-tunnel",
+  "version": "0.1.0",
+  "description": "Credential Vanisher — one-time, out-of-band, never-stored credential pass-through for OpenClaw",
+  "type": "module",
+  "openclaw": { "extensions": ["./dist/index.js"] },
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@sinclair/typebox": "^0.34.0",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}
