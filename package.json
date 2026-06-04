@@ -1,9 +1,35 @@
 {
-  "name": "claw-secret-tunnel",
+  "name": "@MCxiaoguu/secret-tunnel",
   "version": "0.1.0",
   "description": "One-Time Secret Tunnel — one-time, never-stored, out-of-band secret hand-off plugin for OpenClaw",
   "type": "module",
-  "openclaw": { "extensions": ["./dist/index.js"] },
+  "license": "MIT",
+  "author": "MCxiaoguu",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MCxiaoguu/claw-secret-tunnel.git"
+  },
+  "homepage": "https://github.com/MCxiaoguu/claw-secret-tunnel#readme",
+  "bugs": {
+    "url": "https://github.com/MCxiaoguu/claw-secret-tunnel/issues"
+  },
+  "keywords": [
+    "openclaw",
+    "openclaw-plugin",
+    "secret",
+    "credential",
+    "api-key",
+    "one-time",
+    "ephemeral",
+    "out-of-band",
+    "security",
+    "tailscale"
+  ],
+  "openclaw": {
+    "extensions": ["./dist/index.js"],
+    "compat": { "pluginApi": ">=2026.2.12" },
+    "build": { "openclawVersion": "2026.2.12" }
+  },
   "main": "./dist/index.js",
   "scripts": {
     "build": "tsc -p tsconfig.json",
