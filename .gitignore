@@ -7,3 +7,6 @@ coverage/
 .env.*
 # local OpenClaw checkout used only for testing/reference — never commit it here
 openclaw/
+
+# Local design/planning docs — kept on disk, never published
+docs/
