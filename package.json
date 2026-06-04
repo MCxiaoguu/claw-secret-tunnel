@@ -9,7 +9,8 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "demo": "npm run build && node demo/run-demo.mjs"
   },
   "devDependencies": {
     "@sinclair/typebox": "^0.34.0",
