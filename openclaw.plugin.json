@@ -1,8 +1,14 @@
 {
   "id": "secret-tunnel",
-  "name": "One-Time Secret Tunnel",
-  "description": "One-time, never-stored, out-of-band credential pass-through. The agent never sees the value.",
-  "version": "0.1.1",
+  "name": "ClawTunnel",
+  "description": "ClawTunnel — one-time, never-stored, out-of-band credential pass-through. The agent never sees the value.",
+  "version": "0.1.2",
+  "contracts": {
+    "tools": ["request_secret"]
+  },
+  "activation": {
+    "onStartup": true
+  },
   "configSchema": {
     "type": "object",
     "additionalProperties": false,

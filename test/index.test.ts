@@ -16,8 +16,8 @@ function readManifest(): Record<string, unknown> {
 describe("index — plugin wiring", () => {
   it("default-exports a plugin with the expected identity fields", () => {
     expect(plugin.id).toBe("secret-tunnel");
-    expect(plugin.name).toBe("One-Time Secret Tunnel");
-    expect(plugin.version).toBe("0.1.1");
+    expect(plugin.name).toBe("ClawTunnel");
+    expect(plugin.version).toBe("0.1.2");
     expect(typeof plugin.description).toBe("string");
     expect((plugin.description as string).length).toBeGreaterThan(0);
     expect(typeof plugin.register).toBe("function");
@@ -75,6 +75,27 @@ describe("index — plugin wiring", () => {
   it("manifest id equals the plugin id", () => {
     const manifest = readManifest();
     expect(manifest.id).toBe(plugin.id);
+  });
+
+  it("manifest declares contracts.tools and an intentional activation.onStartup", () => {
+    const manifest = readManifest();
+    // OpenClaw resolves tool ownership from contracts.tools without loading the
+    // runtime, so every tool the plugin registers must be declared here.
+    expect((manifest.contracts as { tools?: unknown } | undefined)?.tools).toEqual([
+      "request_secret",
+    ]);
+    // The plugin installs hooks + an HTTP intake route in register(), so it must
+    // be imported during gateway startup (no narrower trigger would suffice).
+    expect((manifest.activation as { onStartup?: unknown } | undefined)?.onStartup).toBe(true);
+  });
+
+  it("contracts.tools matches the tools actually registered at runtime (drift guard)", () => {
+    const { api, tools } = fakeApi();
+    plugin.register(api);
+    const manifest = readManifest();
+    const declared = [...(manifest.contracts as { tools: string[] }).tools].sort();
+    const registered = tools.map((t) => t.name).sort();
+    expect(registered).toEqual(declared);
   });
 
   it("merges a valid pluginConfig: routePath override flows to the registered route", () => {

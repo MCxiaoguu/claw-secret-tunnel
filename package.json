@@ -1,7 +1,7 @@
 {
   "name": "@MCxiaoguu/secret-tunnel",
-  "version": "0.1.1",
-  "description": "One-Time Secret Tunnel — one-time, never-stored, out-of-band secret hand-off plugin for OpenClaw",
+  "version": "0.1.2",
+  "description": "ClawTunnel — one-time, never-stored, out-of-band secret hand-off plugin for OpenClaw",
   "type": "module",
   "license": "MIT",
   "author": "MCxiaoguu",

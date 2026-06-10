@@ -54,10 +54,10 @@ export const configSchema = {
 
 const plugin: OpenClawPlugin = {
   id: "secret-tunnel",
-  name: "One-Time Secret Tunnel",
+  name: "ClawTunnel",
   description:
     "One-time, never-stored, out-of-band credential pass-through. The agent never sees the value.",
-  version: "0.1.1",
+  version: "0.1.2",
   configSchema: configSchema as unknown as Record<string, unknown>,
 
   register(api: OpenClawPluginApi): void {

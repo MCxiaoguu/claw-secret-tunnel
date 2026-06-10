@@ -1,6 +1,6 @@
-# claw-secret-tunnel
+# ClawTunnel
 
-> **One-Time Secret Tunnel** — a one-time, out-of-band secret hand-off plugin for [OpenClaw](https://github.com/openclaw/openclaw).
+> **ClawTunnel** — a one-time, out-of-band secret hand-off plugin for [OpenClaw](https://github.com/openclaw/openclaw).
 
 A human hands the agent a secret (API key / password / token) **once**, via a one-time link delivered over the chat channel and opened **out-of-band**. The secret is captured server-side into an in-memory key→value store the **LLM can never read**, resolved into the agent's *own* tool calls at the point of use via a `{{secret:<key>}}` placeholder, and is **single-use** — used once, then wiped; never written to disk, transcript, or logs.
 
@@ -28,4 +28,4 @@ The minted link must be reachable from the human's device. Reachability is resol
 
 ## Status
 
-**v0.1.1 — published on ClawHub** as `@mcxiaoguu/secret-tunnel` (family: code-plugin). To run it on a gateway, use `scripts/install-on-gateway.sh` (clone + build + enable + self-test), which also checks for the `cloudflared` binary the default tunnel needs.
+**v0.1.2 — published on ClawHub** as `@mcxiaoguu/secret-tunnel` (family: code-plugin; runtime id `secret-tunnel`). To run it on a gateway, use `scripts/install-on-gateway.sh` (clone + build + enable + self-test), which also checks for the `cloudflared` binary the default tunnel needs.
