@@ -1,4 +1,9 @@
-import { DEFAULT_CONFIG, type Lifetime, type SecretTunnelConfig } from "./types.js";
+import {
+  DEFAULT_CONFIG,
+  type Lifetime,
+  type SecretTunnelConfig,
+  type TunnelProvider,
+} from "./types.js";
 
 /**
  * Defensive config loader.
@@ -19,6 +24,12 @@ const LIFETIMES: readonly Lifetime[] = ["use-once", "session", "ttl"];
 
 function isLifetime(value: unknown): value is Lifetime {
   return typeof value === "string" && (LIFETIMES as readonly string[]).includes(value);
+}
+
+const TUNNELS: readonly TunnelProvider[] = ["cloudflared", "off"];
+
+function isTunnelProvider(value: unknown): value is TunnelProvider {
+  return typeof value === "string" && (TUNNELS as readonly string[]).includes(value);
 }
 
 /** A usable port/seconds number: finite and strictly positive. */
@@ -45,6 +56,11 @@ export function loadConfig(raw: unknown): SecretTunnelConfig {
   // detectTailscale: only override on an actual boolean.
   if (typeof input.detectTailscale === "boolean") {
     config.detectTailscale = input.detectTailscale;
+  }
+
+  // tunnel: only one of the known providers.
+  if (isTunnelProvider(input.tunnel)) {
+    config.tunnel = input.tunnel;
   }
 
   // defaultLifetime: only one of the three known literals.

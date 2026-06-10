@@ -2,13 +2,18 @@
   "id": "secret-tunnel",
   "name": "One-Time Secret Tunnel",
   "description": "One-time, never-stored, out-of-band credential pass-through. The agent never sees the value.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "configSchema": {
     "type": "object",
     "additionalProperties": false,
     "properties": {
       "publicUrl": { "type": "string" },
-      "detectTailscale": { "type": "boolean", "default": true },
+      "detectTailscale": { "type": "boolean", "default": false },
+      "tunnel": {
+        "type": "string",
+        "enum": ["cloudflared", "off"],
+        "default": "cloudflared"
+      },
       "defaultLifetime": { "type": "string", "enum": ["use-once", "session", "ttl"], "default": "use-once" },
       "ttlSeconds": { "type": "number", "default": 300 },
       "linkExpirySeconds": { "type": "number", "default": 600 },
@@ -16,7 +21,9 @@
     }
   },
   "uiHints": {
-    "publicUrl": { "label": "Public base URL", "help": "Public HTTPS base of the gateway, e.g. your Tailscale Funnel URL https://host.tailnet.ts.net. Leave blank to auto-detect Tailscale; falls back to localhost (only reachable on the gateway host)." },
+    "publicUrl": { "label": "Public base URL", "help": "Public HTTPS base of the gateway (your own reverse proxy or Tailscale Funnel URL). When set, no tunnel is started and the provider-blind transport is used. Leave blank to use the default on-demand Cloudflare quick tunnel." },
+    "detectTailscale": { "label": "Detect Tailscale", "help": "Opt-in: derive the base URL from this node's tailnet DNS name. Only enable if Tailscale Serve/Funnel for the gateway port is actually configured — detection alone does not make the link publicly reachable." },
+    "tunnel": { "label": "Fallback tunnel", "help": "cloudflared (default): when no publicUrl/Tailscale reachability exists, request_secret starts an ephemeral Cloudflare quick tunnel that lives only while a link is open. Requires the cloudflared binary on PATH. Note: quick tunnels terminate TLS at Cloudflare's edge. Set off to disable." },
     "defaultLifetime": { "label": "Default secret lifetime", "help": "use-once (default), session, or fixed ttl." }
   }
 }

@@ -11,6 +11,13 @@ DIR="$HOME/claw-secret-tunnel"
 
 echo "## host=$(hostname) user=$(whoami)"
 echo "## openclaw=$(openclaw --version 2>/dev/null | head -1) node=$(node -v 2>/dev/null)"
+if command -v cloudflared >/dev/null 2>&1; then
+  echo "## cloudflared=$(cloudflared --version 2>/dev/null | head -1)"
+else
+  echo "## cloudflared=MISSING — the default tunnel needs it. Install:"
+  echo "##   https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/"
+  echo "##   (debian/ubuntu: curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o /usr/local/bin/cloudflared && chmod +x /usr/local/bin/cloudflared)"
+fi
 
 echo "## [1/5] detect how the gateway runs"
 SVC=$(systemctl list-units --all --type=service --no-legend 2>/dev/null | grep -iE 'openclaw|claw' | awk '{print $1}' | head -1)

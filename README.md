@@ -17,8 +17,15 @@ OpenClaw has no inbound-message redaction, so a secret pasted into chat lands in
 
 ## Transport
 
-**Tailscale Funnel** by default: the user needs no Tailscale (only the gateway does), and TLS terminates on the gateway so the secret stays encrypted end-to-end — the tunnel provider never sees it.
+The minted link must be reachable from the human's device. Reachability is resolved per request, in this order:
+
+1. **`publicUrl`** (operator-managed reverse proxy / VPS) — TLS terminates on infrastructure you control; no third party can see the secret. Best when the gateway has a public IP or you run your own ingress.
+2. **Tailscale Funnel** (opt-in via `detectTailscale: true`) — provider-blind too: Tailscale issues the node its own cert, so TLS terminates on the gateway. Only enable it once `tailscale funnel <gateway-port>` actually works on the box; tailnet HTTPS certs and the funnel node attribute must be enabled first.
+3. **Cloudflare Quick Tunnel** (`tunnel: "cloudflared"`, the **default**) — zero-config: `request_secret` spawns `cloudflared tunnel --url http://127.0.0.1:<port>` on demand, mints the link on the returned `https://*.trycloudflare.com` URL, and tears the tunnel down once no link is open (link expiry + 30 s grace). No account, no domain, works behind any NAT. Requires the [`cloudflared` binary](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/) on the gateway's `PATH`.
+4. Otherwise the link falls back to `http://127.0.0.1:<port>` and the tool result warns that it is only reachable on the gateway host.
+
+> **Trade-off (read this):** quick tunnels terminate TLS at Cloudflare's edge, so Cloudflare *could* observe a submitted value in transit. The exposure is bounded — the tunnel exists only while a one-time link is open — but operators with stricter requirements should use `publicUrl` or Tailscale Funnel, where the provider sees only ciphertext. Details in [SECURITY.md](SECURITY.md). Client-side (in-browser) encryption of the submitted value is planned to close this gap.
 
 ## Status
 
-**In development.** The design spec lives under `docs/superpowers/specs/` (dated `2026-06-03`).
+**v0.1.1 — published on ClawHub** as `@mcxiaoguu/secret-tunnel` (family: code-plugin). To run it on a gateway, use `scripts/install-on-gateway.sh` (clone + build + enable + self-test), which also checks for the `cloudflared` binary the default tunnel needs.

@@ -160,6 +160,17 @@ describe("createRequestSecretTool", () => {
   });
 
   describe("base-url warning passthrough", () => {
+    it("awaits an async getBaseUrl (tunnel-backed) and mints the link from its URL", async () => {
+      const tunnelUrl = "https://island-waste-cathedral.trycloudflare.com";
+      const tool = createRequestSecretTool(
+        makeDeps({ getBaseUrl: async () => ({ url: tunnelUrl }) }),
+      );
+      const result = await tool.execute("c", { label: "api" });
+      const details = result.details as { link: string };
+      expect(details.link.startsWith(`${tunnelUrl}${ROUTE}?token=`)).toBe(true);
+      expect(textOf(result)).toContain(details.link);
+    });
+
     it("includes the warning text when getBaseUrl returns one", async () => {
       const warning = "Link is only reachable on the gateway host — set publicUrl.";
       const tool = createRequestSecretTool(

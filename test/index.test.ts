@@ -17,7 +17,7 @@ describe("index — plugin wiring", () => {
   it("default-exports a plugin with the expected identity fields", () => {
     expect(plugin.id).toBe("secret-tunnel");
     expect(plugin.name).toBe("One-Time Secret Tunnel");
-    expect(plugin.version).toBe("0.1.0");
+    expect(plugin.version).toBe("0.1.1");
     expect(typeof plugin.description).toBe("string");
     expect((plugin.description as string).length).toBeGreaterThan(0);
     expect(typeof plugin.register).toBe("function");
@@ -58,6 +58,18 @@ describe("index — plugin wiring", () => {
     const manifest = readManifest();
     expect((plugin.configSchema as { type?: unknown }).type).toBe("object");
     expect(plugin.configSchema).toEqual(manifest.configSchema);
+  });
+
+  it("configSchema declares the tunnel provider (default cloudflared) and opt-in tailscale", () => {
+    const props = (plugin.configSchema as {
+      properties: Record<string, Record<string, unknown>>;
+    }).properties;
+    expect(props.tunnel).toEqual({
+      type: "string",
+      enum: ["cloudflared", "off"],
+      default: "cloudflared",
+    });
+    expect(props.detectTailscale).toEqual({ type: "boolean", default: false });
   });
 
   it("manifest id equals the plugin id", () => {

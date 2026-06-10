@@ -22,10 +22,15 @@ export function createRequestSecretTool(deps: {
   store: SecretStore;
   /**
    * Resolves the public base URL (and optional reachability warning) at call
-   * time. `index.ts` binds this to `() => resolveBaseUrl(config)`. Evaluated per
-   * call so a late-configured `publicUrl` / Tailscale state is picked up.
+   * time. `index.ts` binds this to the tunnel-aware provider (see
+   * `createBaseUrlProvider`). Evaluated — and awaited — per call, so a
+   * late-configured `publicUrl`, Tailscale state, or an on-demand quick tunnel
+   * is picked up; an async provider may take a few seconds while a tunnel
+   * starts.
    */
-  getBaseUrl: () => { url: string; warning?: string };
+  getBaseUrl: () =>
+    | Promise<{ url: string; warning?: string }>
+    | { url: string; warning?: string };
   /** Intake route path the link is built on, e.g. "/secret". */
   routePath: string;
   /** Lifetime applied when the agent does not override it. */
@@ -149,7 +154,7 @@ export function createRequestSecretTool(deps: {
     // (plugins-http.ts: routes.find(e => e.path === url.pathname)), so the
     // token rides in the QUERY, not as a path segment — otherwise the link
     // would 404. base64url tokens are query-safe, so no encoding is needed.
-    const base = getBaseUrl();
+    const base = await getBaseUrl();
     const link = `${base.url}${routePath}?token=${token}`;
 
     // 3. Best-effort direct delivery; never let a delivery failure escape.

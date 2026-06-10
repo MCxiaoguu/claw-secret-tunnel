@@ -10,3 +10,7 @@ openclaw/
 
 # Local design/planning docs — kept on disk, never published
 docs/
+
+# Live agent-gateway test harness: bundled cloudflared binary + audit logs
+# (contain test secrets). Kept on disk for re-runs, never committed.
+harness/

@@ -1,7 +1,7 @@
 import type { OpenClawPlugin, OpenClawPluginApi } from "./openclaw.js";
 import { loadConfig } from "./config.js";
 import { SecretStore } from "./store.js";
-import { resolveBaseUrl } from "./reachability.js";
+import { CloudflaredTunnel, createBaseUrlProvider } from "./tunnel.js";
 import { createRequestSecretTool } from "./request-tool.js";
 import { createIntakeHandler } from "./intake.js";
 import { createBeforeToolCall, createAfterToolCall } from "./resolver.js";
@@ -35,7 +35,12 @@ export const configSchema = {
   additionalProperties: false,
   properties: {
     publicUrl: { type: "string" },
-    detectTailscale: { type: "boolean", default: true },
+    detectTailscale: { type: "boolean", default: false },
+    tunnel: {
+      type: "string",
+      enum: ["cloudflared", "off"],
+      default: "cloudflared",
+    },
     defaultLifetime: {
       type: "string",
       enum: ["use-once", "session", "ttl"],
@@ -52,7 +57,7 @@ const plugin: OpenClawPlugin = {
   name: "One-Time Secret Tunnel",
   description:
     "One-time, never-stored, out-of-band credential pass-through. The agent never sees the value.",
-  version: "0.1.0",
+  version: "0.1.1",
   configSchema: configSchema as unknown as Record<string, unknown>,
 
   register(api: OpenClawPluginApi): void {
@@ -62,12 +67,17 @@ const plugin: OpenClawPlugin = {
     // 2. The single in-memory, ephemeral secret store.
     const store = new SecretStore(config);
 
+    // 2b. On-demand Cloudflare quick-tunnel manager (the default reachability
+    //     fallback). Construction is lazy — nothing spawns until a link is
+    //     actually minted with no publicUrl/Tailscale reachability.
+    const tunnel = new CloudflaredTunnel();
+
     // 3. The agent-facing tool. No `deliver` for now — direct-channel send is
     //    deferred; the agent relays the minted link verbatim (spec §10/§16).
     api.registerTool(
       createRequestSecretTool({
         store,
-        getBaseUrl: () => resolveBaseUrl(config),
+        getBaseUrl: createBaseUrlProvider({ config, tunnel }),
         routePath: config.routePath,
         defaultLifetime: config.defaultLifetime,
       }),
@@ -87,9 +97,12 @@ const plugin: OpenClawPlugin = {
     api.on("message_sending", createMessageSending(store));
     api.on("tool_result_persist", createToolResultPersist(store));
 
-    // 7. Lifecycle wipes.
+    // 7. Lifecycle wipes (+ tunnel teardown so no public route outlives the gateway).
     api.on("session_end", () => store.endSession());
-    api.on("gateway_stop", () => store.clearAll());
+    api.on("gateway_stop", () => {
+      store.clearAll();
+      tunnel.stop();
+    });
 
     // Minimal, value-free startup log. We deliberately log NOTHING derived from
     // a captured secret; only the static registration fact.

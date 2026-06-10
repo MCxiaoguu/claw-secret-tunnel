@@ -1,6 +1,6 @@
 {
   "name": "@MCxiaoguu/secret-tunnel",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "One-Time Secret Tunnel — one-time, never-stored, out-of-band secret hand-off plugin for OpenClaw",
   "type": "module",
   "license": "MIT",
@@ -23,12 +23,21 @@
     "ephemeral",
     "out-of-band",
     "security",
+    "cloudflare",
+    "cloudflared",
+    "quick-tunnel",
     "tailscale"
   ],
   "openclaw": {
-    "extensions": ["./dist/index.js"],
-    "compat": { "pluginApi": ">=2026.2.12" },
-    "build": { "openclawVersion": "2026.2.12" }
+    "extensions": [
+      "./dist/index.js"
+    ],
+    "compat": {
+      "pluginApi": ">=2026.2.12"
+    },
+    "build": {
+      "openclawVersion": "2026.2.12"
+    }
   },
   "main": "./dist/index.js",
   "scripts": {
